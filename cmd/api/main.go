@@ -45,6 +45,7 @@ func main() {
 
 	server := httpserver.NewServer(
 		fmt.Sprintf(":%s", cfg.AppPort),
+		logg,
 	)
 
 	go func() {
