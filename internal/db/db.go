@@ -7,6 +7,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+// Database Transaction Executor
+// DBTX defines the methods required for executing SQL commands and queries.
 type DBTX interface {
 	Exec(
 		ctx context.Context,

@@ -13,6 +13,7 @@ import (
 	"github.com/Roman77St/selzo/internal/db"
 	httpserver "github.com/Roman77St/selzo/internal/http"
 	"github.com/Roman77St/selzo/internal/logger"
+	"github.com/Roman77St/selzo/internal/repository/postgres"
 )
 
 func main() {
@@ -34,15 +35,18 @@ func main() {
 	logg.Info("configuration loaded successfully")
 	logg.Info("logger initialized", "environment", cfg.AppEnv)
 
-	db, err := db.NewPostgresDB(ctx, cfg)
+	database, err := db.NewPostgresDB(ctx, cfg)
 
 	if err != nil {
 		logg.Error("failed to connect to database", "error", err)
 		os.Exit(1)
 	}
-	defer db.Close()
+	defer database.Close()
 
 	logg.Info("postgreSQL database connected")
+
+	userRepo := postgres.NewUserRepository(database)
+	_ = userRepo // TODO: use userRepo in services
 
 	server := httpserver.NewServer(
 		fmt.Sprintf(":%d", cfg.AppPort),

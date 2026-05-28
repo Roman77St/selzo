@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"time"
 
@@ -25,26 +24,17 @@ func NewPostgresDB(
 	cfg *config.Config,
 ) (*DB, error) {
 
-	pgCfg, err := pgxpool.ParseConfig("")
-	if err != nil {
-		return nil, fmt.Errorf("parse postgres config: %w", err)
-	}
+	dsn := fmt.Sprintf(
+	"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+	cfg.DBHost,
+	cfg.DBPort,
+	cfg.DBUser,
+	cfg.DBPassword,
+	cfg.DBName,
+	cfg.DBSSLMode,
+)
 
-	pgCfg.ConnConfig.Host = cfg.DBHost
-	pgCfg.ConnConfig.Port = uint16(cfg.DBPort)
-	pgCfg.ConnConfig.User = cfg.DBUser
-	pgCfg.ConnConfig.Password = cfg.DBPassword
-	pgCfg.ConnConfig.Database = cfg.DBName
-
-	if pgCfg.ConnConfig.TLSConfig == nil {
-		pgCfg.ConnConfig.TLSConfig = &tls.Config{}
-	}
-
-	if cfg.DBSSLMode == "disable" {
-		pgCfg.ConnConfig.TLSConfig.InsecureSkipVerify = true
-	}
-
-	pool, err := pgxpool.NewWithConfig(ctx, pgCfg)
+	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("create postgres pool: %w", err)
 	}
