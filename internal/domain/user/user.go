@@ -1,6 +1,10 @@
 package user
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Role string
 
@@ -11,10 +15,11 @@ const (
 )
 
 type User struct {
-	ID           string
-	Email        string
-	PasswordHash string
-	Role         Role
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID                uuid.UUID
+	Email             string
+	EmailVerifiedAt   *time.Time
+	Role              Role
+	IsActive          bool
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
 }

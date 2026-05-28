@@ -34,17 +34,18 @@ func main() {
 	logg.Info("configuration loaded successfully")
 	logg.Info("logger initialized", "environment", cfg.AppEnv)
 
-	pool, err := db.NewPostgresPool(ctx, cfg)
+	db, err := db.NewPostgresDB(ctx, cfg)
+
 	if err != nil {
 		logg.Error("failed to connect to database", "error", err)
 		os.Exit(1)
 	}
-	defer pool.Close()
+	defer db.Close()
 
 	logg.Info("postgreSQL database connected")
 
 	server := httpserver.NewServer(
-		fmt.Sprintf(":%s", cfg.AppPort),
+		fmt.Sprintf(":%d", cfg.AppPort),
 		logg,
 	)
 

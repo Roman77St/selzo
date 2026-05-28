@@ -3,16 +3,17 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
 	AppEnv  string // dev, prod
-	AppPort string
+	AppPort int
 
 	DBHost     string
-	DBPort     string
+	DBPort     int
 	DBName     string
 	DBUser     string
 	DBPassword string
@@ -39,12 +40,22 @@ func loadConfig() (*Config, error) {
 		return nil, fmt.Errorf("load .env file: %w", err)
 	}
 
+	appPort, err := parsePort(os.Getenv("APP_PORT"))
+	if err != nil {
+		return nil, fmt.Errorf("parse APP_PORT: %w", err)
+	}
+
+	dbPort, err := parsePort(os.Getenv("DB_PORT"))
+	if err != nil {
+		return nil, fmt.Errorf("parse DB_PORT: %w", err)
+	}
+
 	cfg := &Config{
 		AppEnv:  os.Getenv("APP_ENV"),
-		AppPort: os.Getenv("APP_PORT"),
+		AppPort: appPort,
 
 		DBHost:     os.Getenv("DB_HOST"),
-		DBPort:     os.Getenv("DB_PORT"),
+		DBPort:     dbPort,
 		DBName:     os.Getenv("DB_NAME"),
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
@@ -58,14 +69,8 @@ func (c *Config) validate() error {
 	if c.AppEnv != "dev" && c.AppEnv != "prod" {
 		return fmt.Errorf("APP_ENV must be 'dev' or 'prod'")
 	}
-	if c.AppPort == "" {
-		return fmt.Errorf("APP_PORT is required")
-	}
 	if c.DBHost == "" {
 		return fmt.Errorf("DB_HOST is required")
-	}
-	if c.DBPort == "" {
-		return fmt.Errorf("DB_PORT is required")
 	}
 	if c.DBName == "" {
 		return fmt.Errorf("DB_NAME is required")
@@ -81,4 +86,15 @@ func (c *Config) validate() error {
 	}
 
 	return nil
+}
+
+func parsePort(portStr string) (int, error) {
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		return 0, fmt.Errorf("parse port must be a valid integer: %w", err)
+	}
+	if port <= 0 || port > 65535 {
+		return 0, fmt.Errorf("port must be between 1 and 65535")
+	}
+	return port, nil
 }
