@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Roman77St/selzo/internal/config"
@@ -47,44 +46,6 @@ func NewPostgresDB(
 	}
 
 	return &DB{pool: pool}, nil
-}
-
-type TransactionFunc func(tx pgx.Tx) error
-
-// WithTransaction executes fn inside a database transaction.
-//
-// If fn returns an error, the transaction is rolled back.
-// If fn panics, the transaction is rolled back and the panic is rethrown.
-// If fn succeeds, the transaction is committed.
-func (db *DB) WithTransaction(
-	ctx context.Context,
-	fn TransactionFunc,
-) error {
-
-	tx, err := db.pool.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return fmt.Errorf("begin transaction: %w", err)
-	}
-
-	defer func() {
-		_ = tx.Rollback(ctx)
-	}()
-
-	defer func() {
-		if r := recover(); r != nil {
-			panic(r)
-		}
-	}()
-
-	if err := fn(tx); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("commit transaction: %w", err)
-	}
-
-	return nil
 }
 
 // Close gracefully closes the PostgreSQL connection pool.

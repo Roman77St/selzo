@@ -15,7 +15,7 @@ func NewServer(
 	addr string,
 	logger *slog.Logger,
 	authService *auth.Service,
-	) *http.Server {
+) *http.Server {
 
 	r := newRouter(authService, logger)
 

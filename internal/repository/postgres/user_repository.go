@@ -21,11 +21,10 @@ func NewUserRepository(db db.DBTX) *UserRepository {
 	}
 }
 
-func (r *UserRepository) CreateUser(
+func (r *UserRepository) Create(
 	ctx context.Context,
-	user *user.User,
+	u *user.User,
 ) error {
-
 	query := `
 		INSERT INTO users (
 		id,
@@ -37,16 +36,17 @@ func (r *UserRepository) CreateUser(
 		)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
-	_, err := r.db.Exec(
+	executor := db.DBTXFromContext(ctx, r.db)
+	_, err := executor.Exec(
 		ctx,
 		query,
-		user.ID,
-		user.Email,
-		user.EmailVerifiedAt,
-		user.Role,
-		user.IsActive,
-		user.CreatedAt,
-		user.UpdatedAt,
+		u.ID,
+		u.Email,
+		u.EmailVerifiedAt,
+		u.Role,
+		u.IsActive,
+		u.CreatedAt,
+		u.UpdatedAt,
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -60,9 +60,9 @@ func (r *UserRepository) CreateUser(
 		}
 		return fmt.Errorf("create user: %w", err)
 	}
-
 	return nil
 }
+
 
 func (r *UserRepository) GetUserByEmail(
 	ctx context.Context,

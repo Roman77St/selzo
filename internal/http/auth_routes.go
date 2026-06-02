@@ -1,6 +1,8 @@
 package http
 
 import (
+	"log/slog"
+
 	"github.com/go-chi/chi/v5"
 
 	"github.com/Roman77St/selzo/internal/handler"
@@ -10,7 +12,8 @@ import (
 func RegisterAuthRoutes(
 	r chi.Router,
 	authService *auth.Service,
+	logger *slog.Logger,
 ) {
-	authHandler := handler.NewAuthHandler(authService)
+	authHandler := handler.NewAuthHandler(logger, authService)
 	r.Post("/register", authHandler.Register)
 }

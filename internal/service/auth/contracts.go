@@ -9,7 +9,7 @@ import (
 
 // UserRepository provides access to user storage.
 type UserStore interface {
-	CreateUser(
+	Create(
 		ctx context.Context,
 		user *user.User,
 	) error

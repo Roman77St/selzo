@@ -11,7 +11,7 @@ import (
 
 // Main route prefixes
 const (
-	AuthPrefix    = "/api/v1/auth"
+	AuthPrefix = "/api/v1/auth"
 )
 
 // newMainRouter sets up the main router with all routes and middleware.
@@ -29,7 +29,7 @@ func newRouter(
 	r.Get("/health", handler.HealthHandler)
 
 	r.Route(AuthPrefix, func(auth chi.Router) {
-		RegisterAuthRoutes(auth, authService)
+		RegisterAuthRoutes(auth, authService, logger)
 	})
 
 	return r

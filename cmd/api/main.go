@@ -11,9 +11,9 @@ import (
 
 	"github.com/Roman77St/selzo/internal/config"
 	"github.com/Roman77St/selzo/internal/db"
-	authmodule "github.com/Roman77St/selzo/internal/modules/auth"
 	httpserver "github.com/Roman77St/selzo/internal/http"
 	"github.com/Roman77St/selzo/internal/logger"
+	authmodule "github.com/Roman77St/selzo/internal/modules/auth"
 )
 
 // TODO:
