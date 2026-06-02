@@ -25,14 +25,14 @@ func NewPostgresDB(
 ) (*DB, error) {
 
 	dsn := fmt.Sprintf(
-	"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-	cfg.DBHost,
-	cfg.DBPort,
-	cfg.DBUser,
-	cfg.DBPassword,
-	cfg.DBName,
-	cfg.DBSSLMode,
-)
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		cfg.DBHost,
+		cfg.DBPort,
+		cfg.DBUser,
+		cfg.DBPassword,
+		cfg.DBName,
+		cfg.DBSSLMode,
+	)
 
 	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
@@ -48,7 +48,6 @@ func NewPostgresDB(
 
 	return &DB{pool: pool}, nil
 }
-
 
 type TransactionFunc func(tx pgx.Tx) error
 

@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Roman77St/selzo/internal/db"
 	"github.com/Roman77St/selzo/internal/domain/user"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type UserRepository struct {
@@ -47,8 +49,24 @@ func (r *UserRepository) CreateUser(
 		user.UpdatedAt,
 	)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "23505" { // unique_violation
+				switch pgErr.ConstraintName {
+				case ConstraintUsersEmailUnique:
+					return ErrDuplicateEmail
+				}
+			}
+		}
 		return fmt.Errorf("create user: %w", err)
 	}
 
 	return nil
+}
+
+func (r *UserRepository) GetUserByEmail(
+	ctx context.Context,
+	email string,
+) (*user.User, error) {
+	return nil, errors.New("GetUserByEmail not imlemented")
 }

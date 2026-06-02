@@ -16,21 +16,23 @@ func (rw *responseWriter) WriteHeader(statusCode int) {
 	rw.ResponseWriter.WriteHeader(statusCode)
 }
 
-func LoggingMiddleware(logger *slog.Logger, next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
+func Logger(logger *slog.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
 
-		rw := &responseWriter{
-			ResponseWriter: w,
-			statusCode: http.StatusOK,
-		}
-		next.ServeHTTP(rw, r)
+			rw := &responseWriter{
+				ResponseWriter: w,
+				statusCode:     http.StatusOK,
+			}
+			next.ServeHTTP(rw, r)
 
-		logger.Info("HTTP request",
-			"method", r.Method,
-			"path", r.URL.Path,
-			"status", rw.statusCode,
-			"duration", time.Since(start),
-		)
-	})
+			logger.Info("HTTP request",
+				"method", r.Method,
+				"path", r.URL.Path,
+				"status", rw.statusCode,
+				"duration", time.Since(start),
+			)
+		})
+	}
 }

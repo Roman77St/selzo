@@ -7,26 +7,39 @@ import (
 
 	"github.com/Roman77St/selzo/internal/handler"
 	"github.com/Roman77St/selzo/internal/middleware"
+	"github.com/Roman77St/selzo/internal/service/auth"
+	"github.com/go-chi/chi/v5"
 )
 
-func NewServer(addr string, logger *slog.Logger) *http.Server {
+const (
+	AuthPrefix    = "/api/v1/auth"
+	// UserPrefix    = "/api/v1/users"
+	// ProductPrefix = "/api/v1/products"
+)
 
-	mux := http.NewServeMux()
+func NewServer(
+	addr string,
+	logger *slog.Logger,
+	authService *auth.Service,
+	) *http.Server {
 
-	mux.HandleFunc("/health", handler.HealthHandler)
+	r := chi.NewRouter()
 
-	// Wrap the mux with middleware.
-	var handler http.Handler = mux
+	r.Use(middleware.Logger(logger))
+	r.Use(middleware.Recovery(logger))
 
-	handler = middleware.LoggingMiddleware(logger, handler)
-	handler = middleware.RecoveryMiddleware(logger, handler)
+	r.Get("/health", handler.HealthHandler)
+
+	r.Route(AuthPrefix, func(auth chi.Router) {
+		RegisterAuthRoutes(auth, authService)
+	})
 
 	return &http.Server{
-		Addr:    addr,
-		Handler: handler,
-		ReadTimeout:       5 * time.Second, // 5 seconds
-		WriteTimeout:      10 * time.Second, // 10 seconds
+		Addr:              addr,
+		Handler:           r,
+		ReadTimeout:       5 * time.Second,      // 5 seconds
+		WriteTimeout:      10 * time.Second,     // 10 seconds
 		IdleTimeout:       2 * 60 * time.Second, // 2 minutes
-		ReadHeaderTimeout: 2 * time.Second, // 2 seconds
+		ReadHeaderTimeout: 2 * time.Second,      // 2 seconds
 	}
 }
