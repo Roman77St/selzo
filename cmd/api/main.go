@@ -11,13 +11,9 @@ import (
 
 	"github.com/Roman77St/selzo/internal/config"
 	"github.com/Roman77St/selzo/internal/db"
-	"github.com/Roman77St/selzo/internal/security/password"
-	"github.com/Roman77St/selzo/internal/service/auth"
-
-	// "github.com/Roman77St/selzo/internal/domain/user"
+	authmodule "github.com/Roman77St/selzo/internal/modules/auth"
 	httpserver "github.com/Roman77St/selzo/internal/http"
 	"github.com/Roman77St/selzo/internal/logger"
-	"github.com/Roman77St/selzo/internal/repository/postgres"
 )
 
 // TODO:
@@ -51,34 +47,9 @@ func main() {
 
 	logg.Info("postgreSQL database connected")
 
-	userRepo := postgres.NewUserRepository(database)
+	authService := authmodule.New(database)
 
-	credentialRepo := postgres.NewUserCredentialsRepository(database)
-
-	passwordHasher := password.NewArgon2IDHasher()
-
-	// // --------------Test code to verify user repository works----------------
-	// newUser, err := user.New("example@example.com", user.RoleBuyer)
-	// if err != nil {
-	// 	logg.Error("failed to create new user", "error", err)
-	// 	os.Exit(1)
-	// }
-	// err = userRepo.CreateUser(ctx, newUser)
-	// if err != nil {
-	// 	logg.Error("failed to create user in database", "error", err)
-	// 	os.Exit(1)
-	// }
-
-	// logg.Info("user created successfully", "userID", newUser.ID)
-
-	// // -----------------Test code to verify user repository works----------------
-
-	authService := auth.New(
-		database, // db
-		userRepo, // userStore
-		credentialRepo, // credentialStore
-		passwordHasher, // passwordHasher
-	)
+	logg.Info("auth service initialized")
 
 	server := httpserver.NewServer(
 		fmt.Sprintf(":%d", cfg.AppPort),
