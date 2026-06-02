@@ -43,8 +43,9 @@ func (r *UserCredentialsRepository) Create(
 		)
 		VALUES ($1, $2, $3, $4, $5)
 	`
+	executor := db.DBTXFromContext(ctx, r.db)
 
-	_, err := r.db.Exec(
+	_, err := executor.Exec(
 		ctx,
 		query,
 		credentials.UserID,
