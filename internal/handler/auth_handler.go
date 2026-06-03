@@ -28,6 +28,15 @@ type RegisterResponse struct {
 	Message string    `json:"message"`
 }
 
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Token   string `json:"token"`
+}
+
 func NewAuthHandler(logger *slog.Logger, authService *auth.Service) *AuthHandler {
 	return &AuthHandler{
 		authService: *authService,
@@ -69,5 +78,33 @@ func (h *AuthHandler) Register(
 
 	response.WriteJSON(w, http.StatusCreated, map[string]string{
 			"status": "ok",
-	})
+	}, "USER_REGISTERED")
+}
+
+// POST /api/v1/auth/login
+func (h *AuthHandler) Login(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	var req LoginRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.WriteJSON(w, http.StatusBadRequest, "invalid request body", "INVALID_REQUEST")
+	}
+
+	token, err := h.authService.Login(
+		r.Context(),
+		auth.LoginUserInput{
+			Email:    req.Email,
+			Password: req.Password,
+		},
+	)
+	if err != nil {
+		response.WriteAppError(w, err)
+		return
+	}
+
+	response.WriteJSON(w, http.StatusOK, LoginResponse{
+			Token: token,
+	}, "OK")
 }

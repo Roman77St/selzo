@@ -11,14 +11,6 @@ import (
 	"github.com/Roman77St/selzo/internal/repository/postgres"
 )
 
-// Service provides authentication use cases.
-type Service struct {
-	db              *db.DB
-	userStore       UserStore
-	credentialStore UserCredentialStore
-	passwordHasher  PasswordHasher
-}
-
 func New(
 	db *db.DB,
 	userStore UserStore,
@@ -31,14 +23,6 @@ func New(
 		credentialStore: credentialStore,
 		passwordHasher:  passwordHasher,
 	}
-}
-
-// RegisterUserInput contains data required
-// to register a new user.
-type RegisterUserInput struct {
-	Email    string
-	Password string
-	Role     user.Role
 }
 
 func (s *Service) Register(
@@ -83,4 +67,37 @@ func (s *Service) Register(
 	}
 
 	return nil
+}
+
+func (s *Service) Login(
+	ctx context.Context,
+	input LoginUserInput,
+) (string, error) {
+	user, err := s.userStore.GetByEmail(ctx, input.Email)
+	if err != nil {
+		if errors.Is(err, postgres.ErrUserNotFound) {
+			return "", ErrInvalidCredentials
+		}
+		return "", fmt.Errorf("get user: %w", err)
+	}
+
+	cred, err := s.credentialStore.GetByUserID(ctx, user.ID)
+	if err != nil {
+		if errors.Is(err, postgres.ErrUserCredentialNotFound) {
+			return "", ErrInvalidCredentials
+		}
+		return "", fmt.Errorf("get credentials: %w", err)
+	}
+
+	ok, err := s.passwordHasher.Verify(input.Password, cred.PasswordHash)
+	if err != nil {
+		return "", fmt.Errorf("verify password: %w", err)
+	}
+	if !ok {
+		return "", ErrInvalidCredentials
+	}
+
+	token, err := "test_token", nil
+
+	return token, nil
 }

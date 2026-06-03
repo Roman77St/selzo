@@ -7,7 +7,7 @@ import (
 
 	"github.com/Roman77St/selzo/internal/db"
 	"github.com/Roman77St/selzo/internal/domain/user"
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5"
 )
 
 type UserRepository struct {
@@ -49,24 +49,39 @@ func (r *UserRepository) Create(
 		u.UpdatedAt,
 	)
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			if pgErr.Code == "23505" { // unique_violation
-				switch pgErr.ConstraintName {
-				case ConstraintUsersEmailUnique:
-					return ErrDuplicateEmail
-				}
-			}
-		}
-		return fmt.Errorf("create user: %w", err)
+		return fmt.Errorf("create user: %w", mapPostgresError(err))
 	}
 	return nil
 }
 
 
-func (r *UserRepository) GetUserByEmail(
+func (r *UserRepository) GetByEmail(
 	ctx context.Context,
 	email string,
 ) (*user.User, error) {
-	return nil, errors.New("GetUserByEmail not imlemented")
+	query := `
+		SELECT id, email, email_verified_at, role, is_active, created_at, updated_at
+		FROM users
+		WHERE email = $1
+	`
+	executor := db.DBTXFromContext(ctx, r.db)
+	row := executor.QueryRow(ctx, query, email)
+
+	var u user.User
+	err := row.Scan(
+		&u.ID,
+		&u.Email,
+		&u.EmailVerifiedAt,
+		&u.Role,
+		&u.IsActive,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
+		return nil, fmt.Errorf("get user by email: %w", err)
+	}
+	return &u, nil
 }

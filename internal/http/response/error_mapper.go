@@ -23,6 +23,12 @@ func MapError(err error) AppError {
 			Code:    "USER_ALREADY_EXISTS",
 			Message: "user with this email already exists",
 		}
+	case errors.Is(err, auth.ErrInvalidCredentials):
+		return AppError{
+			Status: http.StatusUnauthorized,
+			Code: "INVALID_CREDENTIALS",
+			Message: "invalid email or password",
+		}
 
 	default:
 		return AppError{
@@ -43,5 +49,6 @@ func WriteAppError(
 		w,
 		appErr.Status,
 		appErr.Message,
+		appErr.Code,
 	)
 }

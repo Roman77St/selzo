@@ -7,7 +7,9 @@ import (
 
 	"github.com/Roman77St/selzo/internal/db"
 	"github.com/Roman77St/selzo/internal/domain/usercredential"
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+
 )
 
 // UserCredentialsRepository provides access
@@ -55,22 +57,55 @@ func (r *UserCredentialsRepository) Create(
 		credentials.UpdatedAt,
 	)
 	if err != nil {
-
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-
-			switch pgErr.ConstraintName {
-
-			case ConstraintUserCredentialsUserIDFKey:
-				return ErrUserNotFound
-			}
-		}
-
 		return fmt.Errorf(
 			"create user credentials: %w",
-			err,
+			mapPostgresError(err),
 		)
 	}
 
 	return nil
+}
+
+func (r *UserCredentialsRepository) GetByUserID(
+	ctx context.Context,
+	userID uuid.UUID,
+) (*usercredential.UserCredential, error) {
+
+	query := `
+		SELECT
+			user_id,
+			password_hash,
+			password_changed_at,
+			created_at,
+			updated_at
+		FROM user_credentials
+		WHERE user_id = $1
+	`
+	executor := db.DBTXFromContext(ctx, r.db)
+
+	var credentials usercredential.UserCredential
+
+	err := executor.QueryRow(
+		ctx,
+		query,
+		userID,
+	).Scan(
+		&credentials.UserID,
+		&credentials.PasswordHash,
+		&credentials.PasswordChangedAt,
+		&credentials.CreatedAt,
+		&credentials.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrUserCredentialNotFound
+		}
+
+		return nil, fmt.Errorf(
+			"get user credentials by user ID: %w",
+			err,
+		)
+	}
+
+	return &credentials, nil
 }
