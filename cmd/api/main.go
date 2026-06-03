@@ -47,7 +47,7 @@ func main() {
 
 	logg.Info("postgreSQL database connected")
 
-	authService := authmodule.New(database)
+	authService := authmodule.New(database, cfg.JWTSecret)
 
 	logg.Info("auth service initialized")
 

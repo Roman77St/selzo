@@ -44,8 +44,8 @@ func (db *DB) WithinTransaction(ctx context.Context, fn func(ctx context.Context
 }
 
 func DBTXFromContext(ctx context.Context, defaultDB DBTX) DBTX {
-    if tx, ok := ctx.Value(transactionContextKey).(pgx.Tx); ok {
-        return tx
-    }
-    return defaultDB
+	if tx, ok := ctx.Value(transactionContextKey).(pgx.Tx); ok {
+		return tx
+	}
+	return defaultDB
 }

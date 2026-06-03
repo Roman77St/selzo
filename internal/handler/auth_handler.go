@@ -34,7 +34,7 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token   string `json:"token"`
+	Token string `json:"token"`
 }
 
 func NewAuthHandler(logger *slog.Logger, authService *auth.Service) *AuthHandler {
@@ -77,7 +77,7 @@ func (h *AuthHandler) Register(
 	}
 
 	response.WriteJSON(w, http.StatusCreated, map[string]string{
-			"status": "ok",
+		"status": "ok",
 	}, "USER_REGISTERED")
 }
 
@@ -105,6 +105,6 @@ func (h *AuthHandler) Login(
 	}
 
 	response.WriteJSON(w, http.StatusOK, LoginResponse{
-			Token: token,
+		Token: token,
 	}, "OK")
 }

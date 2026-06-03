@@ -18,6 +18,7 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	DBSSLMode  string
+	JWTSecret  string
 }
 
 func Load() (*Config, error) {
@@ -60,6 +61,7 @@ func loadConfig() (*Config, error) {
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
 		DBSSLMode:  os.Getenv("DB_SSLMODE"),
+		JWTSecret:  os.Getenv("JWT_SECRET"),
 	}
 
 	return cfg, nil
@@ -83,6 +85,9 @@ func (c *Config) validate() error {
 	}
 	if c.DBSSLMode == "" {
 		return fmt.Errorf("DB_SSLMODE is required")
+	}
+	if c.JWTSecret == "" {
+		return fmt.Errorf("JWT_SECRET is required")
 	}
 
 	return nil

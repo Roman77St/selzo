@@ -25,8 +25,8 @@ func MapError(err error) AppError {
 		}
 	case errors.Is(err, auth.ErrInvalidCredentials):
 		return AppError{
-			Status: http.StatusUnauthorized,
-			Code: "INVALID_CREDENTIALS",
+			Status:  http.StatusUnauthorized,
+			Code:    "INVALID_CREDENTIALS",
 			Message: "invalid email or password",
 		}
 

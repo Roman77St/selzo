@@ -16,7 +16,7 @@ func RegisterAuthRoutes(
 ) {
 	registerHandler := handler.NewAuthHandler(logger, authService)
 	r.Post("/register", registerHandler.Register)
-	
+
 	loginHandler := handler.NewAuthHandler(logger, authService)
 	r.Post("/login", loginHandler.Login)
 }

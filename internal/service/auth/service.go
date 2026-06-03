@@ -9,6 +9,7 @@ import (
 	"github.com/Roman77St/selzo/internal/domain/user"
 	"github.com/Roman77St/selzo/internal/domain/usercredential"
 	"github.com/Roman77St/selzo/internal/repository/postgres"
+	"github.com/Roman77St/selzo/internal/security/jwt"
 )
 
 func New(
@@ -16,12 +17,14 @@ func New(
 	userStore UserStore,
 	credentialStore UserCredentialStore,
 	passwordHasher PasswordHasher,
+	jwtService *jwt.Service,
 ) *Service {
 	return &Service{
 		db:              db,
 		userStore:       userStore,
 		credentialStore: credentialStore,
 		passwordHasher:  passwordHasher,
+		jwtService:      jwtService,
 	}
 }
 
@@ -97,7 +100,10 @@ func (s *Service) Login(
 		return "", ErrInvalidCredentials
 	}
 
-	token, err := "test_token", nil
+	token, err := s.jwtService.Generate(user.ID, user.Role)
+	if err != nil {
+		return "", fmt.Errorf("generate token: %w", err)
+	}
 
 	return token, nil
 }

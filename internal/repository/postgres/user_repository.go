@@ -54,7 +54,6 @@ func (r *UserRepository) Create(
 	return nil
 }
 
-
 func (r *UserRepository) GetByEmail(
 	ctx context.Context,
 	email string,

@@ -6,6 +6,7 @@ import (
 	"github.com/Roman77St/selzo/internal/db"
 	"github.com/Roman77St/selzo/internal/domain/user"
 	"github.com/Roman77St/selzo/internal/domain/usercredential"
+	"github.com/Roman77St/selzo/internal/security/jwt"
 	"github.com/google/uuid"
 )
 
@@ -15,6 +16,7 @@ type Service struct {
 	userStore       UserStore
 	credentialStore UserCredentialStore
 	passwordHasher  PasswordHasher
+	jwtService      *jwt.Service
 }
 
 // RegisterUserInput contains data required

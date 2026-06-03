@@ -7,11 +7,10 @@ import (
 )
 
 var (
-	ErrDuplicateEmail = errors.New("duplicate email")
-	ErrUserNotFound   = errors.New("user not found")
+	ErrDuplicateEmail         = errors.New("duplicate email")
+	ErrUserNotFound           = errors.New("user not found")
 	ErrUserCredentialNotFound = errors.New("user credential not found")
 )
-
 
 const (
 	PgUniqueViolation     = "23505"

@@ -9,7 +9,6 @@ import (
 	"github.com/Roman77St/selzo/internal/domain/usercredential"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-
 )
 
 // UserCredentialsRepository provides access
