@@ -2,11 +2,13 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Roman77St/selzo/internal/db"
 	"github.com/Roman77St/selzo/internal/domain/user"
 	"github.com/Roman77St/selzo/internal/domain/usercredential"
+	"github.com/Roman77St/selzo/internal/repository/postgres"
 )
 
 // Service provides authentication use cases.
@@ -63,6 +65,9 @@ func (s *Service) Register(
 
 		// сохраняем пользователя
 		if err := s.userStore.Create(txCtx, newUser); err != nil {
+			if errors.Is(err, postgres.ErrDuplicateEmail) {
+				return ErrUserAlreadyExists
+			}
 			return fmt.Errorf("create user: %w", err)
 		}
 

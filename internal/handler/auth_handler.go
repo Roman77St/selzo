@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Roman77St/selzo/internal/domain/user"
+	"github.com/Roman77St/selzo/internal/http/response"
 	"github.com/Roman77St/selzo/internal/service/auth"
 )
 
@@ -57,14 +58,16 @@ func (h *AuthHandler) Register(
 		},
 	)
 	if err != nil {
-		h.logger.Error("failed to register user", slog.String("error", err.Error()))
-		http.Error(
-			w,
+		h.logger.Error(
 			"failed to register user",
-			http.StatusInternalServerError,
+			"error", err,
 		)
+		response.WriteAppError(w, err)
+
 		return
 	}
 
-	w.WriteHeader(http.StatusNotImplemented)
+	response.WriteJSON(w, http.StatusCreated, map[string]string{
+			"status": "ok",
+	})
 }
