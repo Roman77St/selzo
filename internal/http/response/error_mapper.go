@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/Roman77St/selzo/internal/authctx"
+	"github.com/Roman77St/selzo/internal/security/jwt"
 	"github.com/Roman77St/selzo/internal/service/auth"
 )
 
@@ -28,6 +30,30 @@ func MapError(err error) AppError {
 			Status:  http.StatusUnauthorized,
 			Code:    "INVALID_CREDENTIALS",
 			Message: "invalid email or password",
+		}
+	case errors.Is(err, authctx.ErrUserMissingInContext):
+		return AppError{
+			Status:  http.StatusUnauthorized,
+			Code:    "USER_MISSING_IN_CONTEXT",
+			Message: "user not found in context",
+		}
+	case errors.Is(err, auth.ErrUnauthorized):
+		return AppError{
+			Status:  http.StatusUnauthorized,
+			Code:    "UNAUTHORIZED",
+			Message: "unauthorized",
+		}
+	case errors.Is(err, jwt.ErrInvalidToken):
+		return AppError{
+			Status:  http.StatusUnauthorized,
+			Code:    "INVALID_TOKEN",
+			Message: "invalid token",
+		}
+	case errors.Is(err, jwt.ErrTokenExpired):
+		return AppError{
+			Status:  http.StatusUnauthorized,
+			Code:    "TOKEN_EXPIRED",
+			Message: "token expired",
 		}
 
 	default:

@@ -1,11 +1,17 @@
 package jwt
 
 import (
+	"errors"
 	"time"
 
 	"github.com/Roman77St/selzo/internal/domain/user"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+)
+
+var (
+	ErrInvalidToken = errors.New("invalid token")
+	ErrTokenExpired = errors.New("token expired")
 )
 
 type Service struct {
@@ -39,4 +45,34 @@ func (s *Service) Generate(userID uuid.UUID, role user.Role) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString(s.secret)
+}
+
+func (s *Service) Parse(
+	tokenString string,
+) (*Claims, error) {
+
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&Claims{},
+		func(token *jwt.Token) (any, error) {
+			return s.secret, nil
+		},
+	)
+
+	if err != nil {
+	switch {
+		case errors.Is(err, jwt.ErrTokenExpired):
+			return nil, ErrTokenExpired
+
+		default:
+			return nil, ErrInvalidToken
+		}
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		return nil, ErrInvalidToken
+	}
+
+	return claims, nil
 }

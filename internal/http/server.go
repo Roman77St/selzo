@@ -13,8 +13,8 @@ import (
 // a ready-to-run http.Server instance.
 func NewServer(
 	addr string,
-	logger *slog.Logger,
 	authService *auth.Service,
+	logger *slog.Logger,
 ) *http.Server {
 
 	r := newRouter(authService, logger)

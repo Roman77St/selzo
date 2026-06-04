@@ -2,9 +2,11 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 
+	"github.com/Roman77St/selzo/internal/authctx"
 	"github.com/Roman77St/selzo/internal/domain/user"
 	"github.com/Roman77St/selzo/internal/http/response"
 	"github.com/Roman77St/selzo/internal/service/auth"
@@ -107,4 +109,21 @@ func (h *AuthHandler) Login(
 	response.WriteJSON(w, http.StatusOK, LoginResponse{
 		Token: token,
 	}, "OK")
+}
+
+func (u *AuthHandler) Me(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	authUser, err := authctx.UserFromContext(
+		r.Context(),
+	)
+
+	if err != nil {
+		response.WriteAppError(w, err)
+		return
+	}
+
+	fmt.Println(authUser.ID)
+	fmt.Println(authUser.Role)
 }

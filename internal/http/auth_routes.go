@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/Roman77St/selzo/internal/handler"
+	"github.com/Roman77St/selzo/internal/middleware"
 	"github.com/Roman77St/selzo/internal/service/auth"
 )
 
@@ -14,9 +15,8 @@ func RegisterAuthRoutes(
 	authService *auth.Service,
 	logger *slog.Logger,
 ) {
-	registerHandler := handler.NewAuthHandler(logger, authService)
-	r.Post("/register", registerHandler.Register)
-
-	loginHandler := handler.NewAuthHandler(logger, authService)
-	r.Post("/login", loginHandler.Login)
+	authHandler := handler.NewAuthHandler(logger, authService)
+	r.Post("/register", authHandler.Register)
+	r.Post("/login", authHandler.Login)
+	r.With(middleware.Auth(authService)).Get("/me", authHandler.Me)
 }

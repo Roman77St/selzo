@@ -53,8 +53,8 @@ func main() {
 
 	server := httpserver.NewServer(
 		fmt.Sprintf(":%d", cfg.AppPort),
-		logg,
 		authService,
+		logg,
 	)
 
 	go func() {

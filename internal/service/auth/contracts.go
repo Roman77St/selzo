@@ -64,3 +64,9 @@ type PasswordHasher interface {
 	Hash(password string) (string, error)
 	Verify(password, hash string) (bool, error)
 }
+
+func (s *Service) ParseToken(
+	token string,
+) (*jwt.Claims, error) {
+	return s.jwtService.Parse(token)
+}
