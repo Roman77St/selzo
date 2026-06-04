@@ -1,14 +1,15 @@
-module github.com/Roman77St/selzo
+module github.com/Roman77St/salzo
 
 go 1.25.3
 
 require (
+	github.com/Roman77St/selzo v0.0.0-20260604093553-0434a39811a5
+	github.com/go-chi/chi/v5 v5.3.0
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/joho/godotenv v1.5.1
 )
 
 require (
-	github.com/go-chi/chi/v5 v5.3.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 )

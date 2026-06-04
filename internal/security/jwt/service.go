@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Roman77St/selzo/internal/domain/user"
+	"github.com/Roman77St/salzo/internal/domain/user"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -60,7 +60,7 @@ func (s *Service) Parse(
 	)
 
 	if err != nil {
-	switch {
+		switch {
 		case errors.Is(err, jwt.ErrTokenExpired):
 			return nil, ErrTokenExpired
 

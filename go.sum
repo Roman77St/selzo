@@ -1,3 +1,5 @@
+github.com/Roman77St/selzo v0.0.0-20260604093553-0434a39811a5 h1:UM38wpZQHzBIc/wlqp9lMAeObuD8S9CT1tLvjCFqUXk=
+github.com/Roman77St/selzo v0.0.0-20260604093553-0434a39811a5/go.mod h1:oOaGS4MXaiml6OveRax25B7Drs0UVXj8g2jbziSxFYE=
 github.com/alexedwards/argon2id v1.0.0 h1:wJzDx66hqWX7siL/SRUmgz3F8YMrd/nfX/xHHcQQP0w=
 github.com/alexedwards/argon2id v1.0.0/go.mod h1:tYKkqIjzXvZdzPvADMWOEZ+l6+BD6CtBXMj5fnJppiw=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

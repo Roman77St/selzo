@@ -9,11 +9,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Roman77St/selzo/internal/config"
-	"github.com/Roman77St/selzo/internal/db"
-	httpserver "github.com/Roman77St/selzo/internal/http"
-	"github.com/Roman77St/selzo/internal/logger"
-	authmodule "github.com/Roman77St/selzo/internal/modules/auth"
+	"github.com/Roman77St/salzo/internal/config"
+	"github.com/Roman77St/salzo/internal/db"
+	httpserver "github.com/Roman77St/salzo/internal/http"
+	"github.com/Roman77St/salzo/internal/logger"
+	authmodule "github.com/Roman77St/salzo/internal/modules/auth"
 )
 
 // TODO:

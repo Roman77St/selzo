@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/Roman77St/selzo/internal/authctx"
-	"github.com/Roman77St/selzo/internal/domain/user"
-	"github.com/Roman77St/selzo/internal/http/response"
-	"github.com/Roman77St/selzo/internal/service/auth"
+	"github.com/Roman77St/salzo/internal/authctx"
+	"github.com/Roman77St/salzo/internal/domain/user"
+	"github.com/Roman77St/salzo/internal/http/response"
+	"github.com/Roman77St/salzo/internal/service/auth"
 )
 
 type AuthHandler struct {

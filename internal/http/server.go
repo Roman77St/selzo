@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Roman77St/selzo/internal/service/auth"
+	"github.com/Roman77St/salzo/internal/service/auth"
 )
 
 // NewServer creates and configures the HTTP server,

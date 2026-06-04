@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/Roman77St/selzo/internal/authctx"
-	"github.com/Roman77St/selzo/internal/security/jwt"
-	"github.com/Roman77St/selzo/internal/service/auth"
+	"github.com/Roman77St/salzo/internal/authctx"
+	"github.com/Roman77St/salzo/internal/security/jwt"
+	"github.com/Roman77St/salzo/internal/service/auth"
 )
 
 type AppError struct {

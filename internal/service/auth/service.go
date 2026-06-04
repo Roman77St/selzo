@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Roman77St/selzo/internal/db"
-	"github.com/Roman77St/selzo/internal/domain/user"
-	"github.com/Roman77St/selzo/internal/domain/usercredential"
-	"github.com/Roman77St/selzo/internal/repository/postgres"
-	"github.com/Roman77St/selzo/internal/security/jwt"
+	"github.com/Roman77St/salzo/internal/db"
+	"github.com/Roman77St/salzo/internal/domain/user"
+	"github.com/Roman77St/salzo/internal/domain/usercredential"
+	"github.com/Roman77St/salzo/internal/repository/postgres"
+	"github.com/Roman77St/salzo/internal/security/jwt"
 )
 
 func New(

@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/Roman77St/selzo/internal/config"
+	"github.com/Roman77St/salzo/internal/config"
 )
 
 // DB wraps pgxpool.Pool and provides transaction helpers

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Roman77St/selzo/internal/db"
-	"github.com/Roman77St/selzo/internal/domain/user"
+	"github.com/Roman77St/salzo/internal/db"
+	"github.com/Roman77St/salzo/internal/domain/user"
 	"github.com/jackc/pgx/v5"
 )
 

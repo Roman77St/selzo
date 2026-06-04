@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Roman77St/selzo/internal/db"
-	"github.com/Roman77St/selzo/internal/domain/usercredential"
+	"github.com/Roman77St/salzo/internal/db"
+	"github.com/Roman77St/salzo/internal/domain/usercredential"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )

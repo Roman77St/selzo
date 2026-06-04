@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/Roman77St/selzo/internal/domain/user"
+	"github.com/Roman77St/salzo/internal/domain/user"
 )
 
 var ErrUserMissingInContext = errors.New("user missing in context")

@@ -3,11 +3,11 @@ package authmodule
 import (
 	"time"
 
-	"github.com/Roman77St/selzo/internal/db"
-	"github.com/Roman77St/selzo/internal/repository/postgres"
-	"github.com/Roman77St/selzo/internal/security/jwt"
-	"github.com/Roman77St/selzo/internal/security/password"
-	"github.com/Roman77St/selzo/internal/service/auth"
+	"github.com/Roman77St/salzo/internal/db"
+	"github.com/Roman77St/salzo/internal/repository/postgres"
+	"github.com/Roman77St/salzo/internal/security/jwt"
+	"github.com/Roman77St/salzo/internal/security/password"
+	"github.com/Roman77St/salzo/internal/service/auth"
 )
 
 func New(database *db.DB, jwtSecret string) *auth.Service {

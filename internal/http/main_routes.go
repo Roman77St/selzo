@@ -3,9 +3,9 @@ package http
 import (
 	"log/slog"
 
-	"github.com/Roman77St/selzo/internal/handler"
-	"github.com/Roman77St/selzo/internal/middleware"
-	"github.com/Roman77St/selzo/internal/service/auth"
+	"github.com/Roman77St/salzo/internal/handler"
+	"github.com/Roman77St/salzo/internal/middleware"
+	"github.com/Roman77St/salzo/internal/service/auth"
 	"github.com/go-chi/chi/v5"
 )
 
