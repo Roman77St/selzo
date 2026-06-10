@@ -123,6 +123,19 @@ CREATE TABLE user_profiles (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE refresh_tokens (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    token_hash TEXT NOT NULL UNIQUE,
+
+    expires_at TIMESTAMP NOT NULL,
+    revoked_at TIMESTAMP NULL,
+
+    created_at TIMESTAMP NOT NULL
+);
+
+
 
 -- Indexes.
 
@@ -152,3 +165,6 @@ CREATE TRIGGER user_profiles_set_updated_at
 BEFORE UPDATE ON user_profiles
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
+
+CREATE INDEX idx_refresh_tokens_user_id
+ON refresh_tokens(user_id);

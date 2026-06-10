@@ -16,33 +16,76 @@ var (
 
 type Service struct {
 	secret []byte
-	ttl    time.Duration
+
+	accessTTL  time.Duration
+	refreshTTL time.Duration
 }
 
-func New(secret string, ttl time.Duration) *Service {
+func New(secret string, accessTTL time.Duration, refreshTTL time.Duration) *Service {
 	return &Service{
 		secret: []byte(secret),
-		ttl:    ttl,
+		accessTTL:    accessTTL,
+		refreshTTL: refreshTTL,
 	}
 }
+
+type TokenType string
+
+const (
+	AccessToken TokenType = "access"
+	RefreshToken TokenType = "refresh"
+)
 
 type Claims struct {
 	UserID uuid.UUID `json:"user_id"`
 	Role   user.Role `json:"role"`
+
+	Type TokenType `json:"type"`
+
 	jwt.RegisteredClaims
 }
 
-func (s *Service) Generate(userID uuid.UUID, role user.Role) (string, error) {
+func (s *Service) GenerateAccessToken(userID uuid.UUID, role user.Role) (string, error) {
 	claims := Claims{
 		UserID: userID,
 		Role:   role,
+		Type: AccessToken,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.ttl)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.accessTTL)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	return token.SignedString(s.secret)
+}
+
+func (s *Service) GenerateRefreshToken(
+	userID uuid.UUID,
+	role user.Role,
+) (string,error) {
+
+	claims := Claims{
+		UserID: userID,
+		Role: role,
+		Type: RefreshToken,
+
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(
+				time.Now().Add(s.refreshTTL),
+			),
+			IssuedAt: jwt.NewNumericDate(
+				time.Now(),
+			),
+		},
+	}
+
+
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		claims,
+	)
 
 	return token.SignedString(s.secret)
 }

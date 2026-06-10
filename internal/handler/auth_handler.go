@@ -36,7 +36,8 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token string `json:"token"`
+	AccessToken string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 func NewAuthHandler(logger *slog.Logger, authService *auth.Service) *AuthHandler {
@@ -94,7 +95,7 @@ func (h *AuthHandler) Login(
 		response.WriteJSON(w, http.StatusBadRequest, "invalid request body", "INVALID_REQUEST")
 	}
 
-	token, err := h.authService.Login(
+	tokens, err := h.authService.Login(
 		r.Context(),
 		auth.LoginUserInput{
 			Email:    req.Email,
@@ -107,7 +108,8 @@ func (h *AuthHandler) Login(
 	}
 
 	response.WriteJSON(w, http.StatusOK, LoginResponse{
-		Token: token,
+		AccessToken: tokens.AccessToken,
+		RefreshToken: tokens.RefreshToken,
 	}, "OK")
 }
 

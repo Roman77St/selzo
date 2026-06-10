@@ -4,18 +4,28 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Roman77St/salzo/internal/db"
+	"github.com/Roman77St/salzo/internal/domain/refreshtoken"
 	"github.com/Roman77St/salzo/internal/domain/user"
 	"github.com/Roman77St/salzo/internal/domain/usercredential"
 	"github.com/Roman77St/salzo/internal/repository/postgres"
 	"github.com/Roman77St/salzo/internal/security/jwt"
+	"github.com/Roman77St/salzo/internal/security/tokenhash"
+	"github.com/google/uuid"
 )
+
+type TokenPair struct {
+	AccessToken string
+	RefreshToken string
+}
 
 func New(
 	db *db.DB,
 	userStore UserStore,
 	credentialStore UserCredentialStore,
+	refreshTokenStore RefreshTokenStore,
 	passwordHasher PasswordHasher,
 	jwtService *jwt.Service,
 ) *Service {
@@ -23,6 +33,7 @@ func New(
 		db:              db,
 		userStore:       userStore,
 		credentialStore: credentialStore,
+		refreshTokenStore: refreshTokenStore,
 		passwordHasher:  passwordHasher,
 		jwtService:      jwtService,
 	}
@@ -75,35 +86,61 @@ func (s *Service) Register(
 func (s *Service) Login(
 	ctx context.Context,
 	input LoginUserInput,
-) (string, error) {
+) (*TokenPair, error) {
 	user, err := s.userStore.GetByEmail(ctx, input.Email)
 	if err != nil {
 		if errors.Is(err, postgres.ErrUserNotFound) {
-			return "", ErrInvalidCredentials
+			return nil, ErrInvalidCredentials
 		}
-		return "", fmt.Errorf("get user: %w", err)
+		return nil, fmt.Errorf("get user: %w", err)
 	}
 
 	cred, err := s.credentialStore.GetByUserID(ctx, user.ID)
 	if err != nil {
 		if errors.Is(err, postgres.ErrUserCredentialNotFound) {
-			return "", ErrInvalidCredentials
+			return nil, ErrInvalidCredentials
 		}
-		return "", fmt.Errorf("get credentials: %w", err)
+		return nil, fmt.Errorf("get credentials: %w", err)
 	}
 
 	ok, err := s.passwordHasher.Verify(input.Password, cred.PasswordHash)
 	if err != nil {
-		return "", fmt.Errorf("verify password: %w", err)
+		return nil, fmt.Errorf("verify password: %w", err)
 	}
 	if !ok {
-		return "", ErrInvalidCredentials
+		return nil, ErrInvalidCredentials
 	}
 
-	token, err := s.jwtService.Generate(user.ID, user.Role)
+	accessToken, err := s.jwtService.GenerateAccessToken(user.ID, user.Role)
 	if err != nil {
-		return "", fmt.Errorf("generate token: %w", err)
+		return nil, fmt.Errorf("generate access token: %w", err)
 	}
 
-	return token, nil
+	refreshToken, err := s.jwtService.GenerateRefreshToken(user.ID, user.Role)
+	if err != nil {
+		return nil, fmt.Errorf("generate refresh token: %w", err)
+	}
+
+	tokenHash := tokenhash.Hash(refreshToken)
+	rt := refreshtoken.Token{
+		ID: uuid.New(),
+		UserID: user.ID,
+		TokenHash: tokenHash,
+		ExpiresAt: time.Now().Add(30*24*time.Hour),
+		CreatedAt: time.Now(),
+	}
+
+	if err := s.refreshTokenStore.Create(ctx, &rt); err != nil {
+		return nil, fmt.Errorf(
+			"save refresh token: %w",
+			err,
+		)
+	}
+
+	tokenPair := TokenPair{
+		AccessToken: accessToken,
+		RefreshToken: refreshToken,
+	}
+
+	return &tokenPair, nil
 }

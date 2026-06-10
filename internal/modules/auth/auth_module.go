@@ -11,20 +11,23 @@ import (
 )
 
 func New(database *db.DB, jwtSecret string) *auth.Service {
-	userRepo := postgres.NewUserRepository(database)
-	credentialRepo := postgres.NewUserCredentialsRepository(database)
+	userStore := postgres.NewUserRepository(database)
+	credentialStore := postgres.NewUserCredentialsRepository(database)
+	refreshTokenStore := postgres.NewRefreshTokenRepository(database)
 
 	passwordHasher := password.NewArgon2IDHasher()
 
 	jwtService := jwt.New(
 		jwtSecret,
 		15*time.Minute,
+		30*24*time.Hour,
 	)
 
 	return auth.New(
 		database,
-		userRepo,
-		credentialRepo,
+		userStore,
+		credentialStore,
+		refreshTokenStore,
 		passwordHasher,
 		jwtService,
 	)
