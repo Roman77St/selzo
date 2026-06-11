@@ -18,14 +18,14 @@ type Service struct {
 	secret []byte
 
 	accessTTL  time.Duration
-	refreshTTL time.Duration
+	RefreshTTL time.Duration
 }
 
 func New(secret string, accessTTL time.Duration, refreshTTL time.Duration) *Service {
 	return &Service{
 		secret: []byte(secret),
 		accessTTL:    accessTTL,
-		refreshTTL: refreshTTL,
+		RefreshTTL: refreshTTL,
 	}
 }
 
@@ -73,7 +73,7 @@ func (s *Service) GenerateRefreshToken(
 
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(
-				time.Now().Add(s.refreshTTL),
+				time.Now().Add(s.RefreshTTL),
 			),
 			IssuedAt: jwt.NewNumericDate(
 				time.Now(),

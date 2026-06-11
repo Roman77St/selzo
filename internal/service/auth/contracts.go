@@ -79,10 +79,10 @@ type RefreshTokenStore interface {
 		token *refreshtoken.Token,
 	) error
 
-	// GetByHash(
-	// 	ctx context.Context,
-	// 	hash string,
-	// ) (*refreshtoken.Token, error)
+	GetByHash(
+		ctx context.Context,
+		hash string,
+	) (*refreshtoken.Token, error)
 
 	// Revoke(
 	// 	ctx context.Context,

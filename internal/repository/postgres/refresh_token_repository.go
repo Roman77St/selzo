@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Roman77St/salzo/internal/db"
 	"github.com/Roman77St/salzo/internal/domain/refreshtoken"
+	"github.com/jackc/pgx/v5"
 )
 
 type RefreshTokenRepository struct {
@@ -58,4 +60,50 @@ func (r *RefreshTokenRepository) Create(
 	}
 
 	return nil
+}
+
+func (r *RefreshTokenRepository) GetByHash(
+	ctx context.Context,
+	hash string,
+) (*refreshtoken.Token, error) {
+
+	query := `
+	SELECT
+		id,
+		user_id,
+		token_hash,
+		expires_at,
+		revoked_at,
+		created_at
+	FROM refresh_tokens
+	WHERE token_hash = $1
+	`
+
+	var token refreshtoken.Token
+
+	err := r.db.QueryRow(
+		ctx,
+		query,
+		hash,
+	).Scan(
+		&token.ID,
+		&token.UserID,
+		&token.TokenHash,
+		&token.ExpiresAt,
+		&token.RevokedAt,
+		&token.CreatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrRefreshTokenNotFound
+		}
+
+		return nil, fmt.Errorf(
+			"get refresh token: %w",
+			err,
+		)
+	}
+
+	return &token, nil
 }

@@ -10,6 +10,7 @@ var (
 	ErrDuplicateEmail         = errors.New("duplicate email")
 	ErrUserNotFound           = errors.New("user not found")
 	ErrUserCredentialNotFound = errors.New("user credential not found")
+	ErrRefreshTokenNotFound = errors.New("refresh token not found")
 )
 
 const (

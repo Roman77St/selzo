@@ -126,7 +126,7 @@ func (s *Service) Login(
 		ID: uuid.New(),
 		UserID: user.ID,
 		TokenHash: tokenHash,
-		ExpiresAt: time.Now().Add(30*24*time.Hour),
+		ExpiresAt: time.Now().Add(s.jwtService.RefreshTTL),
 		CreatedAt: time.Now(),
 	}
 
